@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
+
+
 void *send_function(void *argument)
 {
 	long int size_of_file = 0;
@@ -50,7 +52,7 @@ int main()
 	struct sockaddr_in address;
 	int addrlen;
 	pthread_t thread;
-
+	pid_t process_id;
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
 	address.sin_family = AF_INET;
@@ -62,8 +64,22 @@ int main()
 
 	while (1) {
 		client_socket = accept(server_socket, 0, 0);
-		if (client_socket)
+		if (client_socket){
+			#ifdef SEND_FILE_USING_THREAD
 			pthread_create(&thread, NULL, send_function, &client_socket);
+			#else
+			process_id=fork();
+			switch(process_id){
+				case 0:
+					close(server_socket);
+					send_function((void*)&client_socket);
+				case -1:
+					exit(1);
+				default:
+					close(server_socket);
+			}
+			#endif
+		}
 	}
 	return 0;
 }
