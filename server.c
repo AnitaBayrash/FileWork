@@ -1,13 +1,16 @@
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <string.h>
 #include <stdio.h>
+
+#ifdef SEND_FILE_USING_THREAD
 #include <pthread.h>
-
-
+#else
+#include <sys/types.h>
+#include <sys/wait.h>
+#endif
 
 void *send_function(void *argument)
 {
