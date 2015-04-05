@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	int socket_object;
 	struct sockaddr_in address;
 	struct hostent *server;
-	char answer[64], answer_char;
+	char answer[128], answer_char;
 	char buffer[512];
 	int i, received_bytes = 0;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	}
 
 	send(socket_object, argv[2], strlen(argv[2])+1, 0);
-	recv(socket_object, answer, 64, 0);
+	recv(socket_object, answer, 128, 0);
 	printf(answer);
 	answer[5]='\0';
 	if (!strcmp(answer, "error")) {
@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 	received_bytes = recv(socket_object, buffer, 512, 0);
 	while (received_bytes > 0) {
 		fwrite(buffer, 1, received_bytes, fout);
+		printf(buffer);
+		memset(buffer, '\0', 512);
 		received_bytes = recv(socket_object, buffer, 512, 0);
 	}
 	close(socket_object);
